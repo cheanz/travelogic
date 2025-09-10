@@ -13,6 +13,9 @@ struct travelogicApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
+            PointOfInterest.self,
+            RouteWaypoint.self,
+            SavedRoute.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
