@@ -86,7 +86,9 @@ struct ContentView: View {
             ) { poi in
                 handlePOITap(poi)
             }
+#if os(iOS)
             .ignoresSafeArea()
+#endif
             
             VStack {
                 HStack {
@@ -118,7 +120,11 @@ struct ContentView: View {
             }
             .disabled(searchText.isEmpty || isSearching)
         }
+#if os(iOS)
         .background(Color(.systemBackground).opacity(0.9))
+#elseif os(macOS)
+        .background(Color(NSColor.controlBackgroundColor).opacity(0.9))
+#endif
         .cornerRadius(10)
     }
     
@@ -128,7 +134,11 @@ struct ContentView: View {
                 Image(systemName: "location.fill")
                     .foregroundColor(.blue)
                     .padding(8)
+#if os(iOS)
                     .background(Color(.systemBackground))
+#elseif os(macOS)
+                    .background(Color(NSColor.controlBackgroundColor))
+#endif
                     .clipShape(Circle())
                     .shadow(radius: 3)
             }
@@ -137,7 +147,11 @@ struct ContentView: View {
                 Image(systemName: "trash")
                     .foregroundColor(.red)
                     .padding(8)
+#if os(iOS)
                     .background(Color(.systemBackground))
+#elseif os(macOS)
+                    .background(Color(NSColor.controlBackgroundColor))
+#endif
                     .clipShape(Circle())
                     .shadow(radius: 3)
             }
@@ -164,7 +178,11 @@ struct ContentView: View {
             .disabled(selectedPOIs.isEmpty)
         }
         .padding()
+#if os(iOS)
         .background(Color(.systemBackground).opacity(0.9))
+#elseif os(macOS)
+        .background(Color(NSColor.controlBackgroundColor).opacity(0.9))
+#endif
         .cornerRadius(15)
         .padding(.horizontal)
         .padding(.bottom)
@@ -230,11 +248,13 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Routes")
+#if os(iOS)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
             }
+#endif
         }
     }
     
@@ -377,7 +397,11 @@ struct CategoryScrollView: View {
                             .multilineTextAlignment(.center)
                     }
                     .padding()
+#if os(iOS)
                     .background(Color(.systemGray6))
+#elseif os(macOS)
+                    .background(Color(NSColor.controlColor))
+#endif
                     .cornerRadius(10)
                     .onTapGesture {
                         onCategoryTap(category)
@@ -477,6 +501,7 @@ struct SaveRouteSheet: View {
             }
             .padding()
             .navigationTitle("Save Route")
+#if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -493,6 +518,23 @@ struct SaveRouteSheet: View {
                     .disabled(selectedPOIs.isEmpty)
                 }
             }
+#elseif os(macOS)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        routeService.saveRoute(name: routeName.isEmpty ? "Untitled Route" : routeName)
+                        dismiss()
+                    }
+                    .disabled(selectedPOIs.isEmpty)
+                }
+            }
+#endif
         }
     }
 }

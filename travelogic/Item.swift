@@ -27,7 +27,7 @@ final class PointOfInterest {
     var longitude: Double
     var address: String
     var rating: Double
-    var description: String
+    var itemDescription: String
     var isVisited: Bool
     var createdAt: Date
     
@@ -39,7 +39,7 @@ final class PointOfInterest {
         self.longitude = longitude
         self.address = address
         self.rating = rating
-        self.description = description
+        self.itemDescription = description
         self.isVisited = false
         self.createdAt = Date()
     }

@@ -8,7 +8,11 @@
 import SwiftUI
 import MapKit
 
+#if os(iOS)
 struct MapView: UIViewRepresentable {
+#elseif os(macOS)
+struct MapView: NSViewRepresentable {
+#endif
     @Binding var region: MKCoordinateRegion
     @Binding var annotations: [PointOfInterest]
     @Binding var route: MKRoute?
@@ -28,7 +32,11 @@ struct MapView: UIViewRepresentable {
         self.onAnnotationTap = onAnnotationTap
     }
     
+#if os(iOS)
     func makeUIView(context: Context) -> MKMapView {
+#elseif os(macOS)
+    func makeNSView(context: Context) -> MKMapView {
+#endif
         let mapView = MKMapView()
         mapView.delegate = context.coordinator
         mapView.region = region
@@ -55,7 +63,11 @@ struct MapView: UIViewRepresentable {
         return mapView
     }
     
+#if os(iOS)
     func updateUIView(_ mapView: MKMapView, context: Context) {
+#elseif os(macOS)
+    func updateNSView(_ mapView: MKMapView, context: Context) {
+#endif
         if mapView.region.center.latitude != region.center.latitude ||
            mapView.region.center.longitude != region.center.longitude {
             mapView.setRegion(region, animated: true)
@@ -110,7 +122,14 @@ struct MapView: UIViewRepresentable {
             if annotationView == nil {
                 annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 annotationView?.canShowCallout = true
+#if os(iOS)
                 annotationView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+#elseif os(macOS)
+                let button = NSButton()
+                button.title = "Info"
+                button.bezelStyle = .rounded
+                annotationView?.rightCalloutAccessoryView = button
+#endif
             } else {
                 annotationView?.annotation = annotation
             }
@@ -121,7 +140,7 @@ struct MapView: UIViewRepresentable {
             return annotationView
         }
         
-        func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: NSControl) {
             guard let poiAnnotation = view.annotation as? POIAnnotation else { return }
             parent.onAnnotationTap?(poiAnnotation.pointOfInterest)
         }
@@ -136,7 +155,7 @@ struct MapView: UIViewRepresentable {
             return MKOverlayRenderer(overlay: overlay)
         }
         
-        private func categoryColor(for category: String) -> UIColor {
+        private func categoryColor(for category: String) -> NSColor {
             switch category.lowercased() {
             case "restaurant", "food":
                 return .systemOrange

@@ -29,10 +29,17 @@ class LocationManager: NSObject, ObservableObject {
     }
     
     func startLocationUpdates() {
+#if os(iOS)
         guard authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways else {
             requestLocationPermission()
             return
         }
+#elseif os(macOS)
+        guard authorizationStatus == .authorizedAlways else {
+            requestLocationPermission()
+            return
+        }
+#endif
         
         locationManager.startUpdatingLocation()
         isLocationEnabled = true
@@ -65,8 +72,13 @@ extension LocationManager: CLLocationManagerDelegate {
             self.authorizationStatus = status
             
             switch status {
+#if os(iOS)
             case .authorizedWhenInUse, .authorizedAlways:
                 startLocationUpdates()
+#elseif os(macOS)
+            case .authorizedAlways:
+                startLocationUpdates()
+#endif
             case .denied, .restricted:
                 stopLocationUpdates()
             case .notDetermined:
